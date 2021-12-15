@@ -3,56 +3,54 @@ fs.readFile(filename, 'utf8', (err, data) => {
   const lines = data.trim().split("\n").map(l => {
     return l.split('')
   })
-  //console.log(lines)
-  lines.some(line => {
-    // console.log(line)
-    const stack = {
-      '(': 0,
-      '[': 0,
-      '<': 0,
-      '{': 0,
-    }
+  let solution = 0;
+  lines.forEach(line => {
+    const stack = [];
     let lastToken
-    line.some(token => {
-      // console.log(token);
+    const invalidLine = line.some(token => {
+      let isValid;
+      let pop;
       switch (token) {
         case '(':
         case '[':
         case '<':
         case '{':
-          stack[token]++
+          isValid = true
+          pop = undefined
+          stack.push(token)
           break;
         case ')':
-          stack['(']--
+          pop = stack.pop()
+          isValid = pop === '('
           break;
         case ']':
-          stack['[']--
+          pop = stack.pop()
+          isValid = pop === '['
           break;
         case '>':
-          stack['<']--
+          pop = stack.pop()
+          isValid = pop === '<'
           break;
         case '}':
-          stack['{']--
+          pop = stack.pop()
+          isValid = pop === '{'
           break;
       }
-      const isValid = check(stack)
       lastToken = token;
       return !isValid;
     })
-    console.log(lastToken)
-    return false;
+    if (invalidLine) {
+      const points = {
+        ')': 3,
+        ']': 57,
+        '}': 1197,
+        '>': 25137,
+      }
+      solution += points[lastToken]
+    }
   })
-  let solution = 0
+
   console.log(`Solution: ${solution}`)
 
-  function check(stack) {
-    let valid = true;
-    Object.values(stack).forEach(v => {
-      if (v < 0) {
-        valid = false;
-      }
-    })
-    return valid
-  }
 });
 
