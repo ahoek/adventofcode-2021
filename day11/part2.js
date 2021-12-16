@@ -7,20 +7,25 @@ fs.readFile(filename, 'utf8', (err, data) => {
   let solution = 0;
 
   let flashP = []
-  for (let i = 0; i < 100; i++) {
-    step()
+  for (let i = 0; i < 2000; i++) {
+    const stop = step()
+    if (stop) {
+      break;
+    }
   }
 
   console.log(`Solution: ${solution}`)
 
   function step() {
+    solution++
     flashP = []
 
     increaseOne()
     flashAll();
     flashP = [];
-    zero()
-    draw()
+    const stop = zero()
+    //draw()
+    return stop;
 
     function increaseOne() {
       grid.forEach((row) => {
@@ -58,14 +63,17 @@ fs.readFile(filename, 'utf8', (err, data) => {
     }
 
     function zero() {
+      let count = 0;
       for (let x = 0; x < size; x++){
         for (let y = 0; y < size; y++) {
           if (grid[y][x] > 9) {
-            solution++;
+            count++;
             grid[y][x] = 0
           }
         }
       }
+      console.log(count)
+      return count === 100
     }
 
     function neighbors(p) {
