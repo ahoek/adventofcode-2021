@@ -4,46 +4,44 @@ fs.readFile(filename, 'utf8', (err, data) => {
     .split("\n")
     .map(l => l.split('').map(x => parseInt(x)))
   // console.log(grid.length)
-  let solution = 0
+  // let solution = 0
   const size = grid.length
-  // const size = 3
+  // const size = 40
 
   let x = 0
   let y = 0
 
-  let lengths = []
-  const path = []
-  getPaths(x, y, path)
-
-  lengths = lengths.sort()
-
-  console.log('lengths',lengths)
+  const length = 0
+  let solution = Infinity
+  getPaths(x, y, length)
 
   console.log(`Solution: ${solution}`)
 
   function getPaths(x, y, length) {
+    // console.log({x,y})
     // End reached
     if (x === size - 1 && y === size - 1) {
-      // console.log('end')
-      paths.push(path.reduce((a,v) => a + v ,0))
+      if (length < solution) {
+        console.log(length)
+        solution = length
+      }
       return;
     }
 
-    path.push(grid[y][x]);
+    length += grid[y][x]
+    if (length >= solution) {
+      // console.log(length)
+      return;
+    }
 
     // right
-    if (x < size - 1) {
-      getPaths(x + 1, y, path);
+    if ((x + 1) < size && y < size) {
+      getPaths(x + 1, y, length)
     }
 
     // down
-    if (y < size - 1) {
-      getPaths(x, y + 1, path);
+    if (x < size &&  (y + 1) < size) {
+      getPaths(x, y + 1, length)
     }
-
-    // backtrack
-    path.pop();
   }
-
-
 });
