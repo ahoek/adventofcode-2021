@@ -20,6 +20,7 @@ fs.readFile(filename, 'utf8', (err, data) => {
     const count = counts[ch];
     counts[ch] = count ? count + 1 : 1;
   }
+  console.log(counts)
   const v = Object.values(counts);
   let solution = Math.max(...v) - Math.min(...v);
 
