@@ -1,39 +1,44 @@
 const fs = require('fs'), filename = process.argv[2];
 fs.readFile(filename, 'utf8', (err, data) => {
   let start = process.hrtime();
+  const multi = 5
   const g  = new Graph()
   let e = data.trim()
     .split("\n")
     .map(l => l.split('').map(x => parseInt(x)))
 
   const size = e.length
-  for (let x = 0; x < size * 5; x++) {
-    for (let y = 0; y < size * 5; y++) {
+  for (let x = 0; x < size * multi; x++) {
+    for (let y = 0; y < size * multi; y++) {
       const v = `${x},${y}`;
       g.addVertex(v)
     }
   }
-  for (let x = 0; x < size*5; x++) {
-    for (let y = 0; y < size*5; y++) {
+  for (let x = 0; x < size*multi; x++) {
+    for (let y = 0; y < size*multi; y++) {
       const v = `${x},${y}`;
-      const risk = e[y%size][x%size];
+      const add = Math.floor(x / size) + Math.floor(y / size)
+      let risk = e[y%size][x%size] + add;
+      if (risk > 9) {
+        risk -= 9
+      }
       if (x > 0) {
         g.addEdge(`${x - 1},${y}`, v, risk) // right
       }
       if (y > 0) {
         g.addEdge(`${x},${y - 1}`, v, risk) // down
       }
-      if (x+1 < size*5) {
+      if (x+1 < size*multi) {
         g.addEdge(`${x + 1},${y}`, v, risk) // left
       }
-      if (y+1 < size*5) {
+      if (y+1 < size*multi) {
         g.addEdge(`${x},${y + 1}`, v, risk) // up
       }
     }
   }
   const { distances } = g.dijkstra('0,0');
   let solution = Infinity
-  solution = distances[`${size*5 - 1},${size*5 - 1}`]
+  solution = distances[`${size*multi - 1},${size*multi - 1}`]
   console.log(`Solution: ${solution} (${process.hrtime(start)[1] / 1000000}ms)`)
 });
 
