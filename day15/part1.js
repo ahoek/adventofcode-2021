@@ -1,38 +1,43 @@
 const fs = require('fs'), filename = process.argv[2];
 fs.readFile(filename, 'utf8', (err, data) => {
+  const g  = new Graph()
   let e = data.trim()
     .split("\n")
     .map(l => l.split('').map(x => parseInt(x)))
-  const size = e.length
 
-  const g  = new Graph()
-  // const inGrid = (x, y) => { x > 0}
+  const size = e.length
   for (let x = 0; x < size; x++) {
     for (let y = 0; y < size; y++) {
-      const v = `${y * size + x}`;
+      const v = `${x},${y}`;
       g.addVertex(v)
-      if (x > 0) {
-        g.addEdge(`${y * size + (x - 1)}`, v, e[y][x]) // right
-      }
-      if (y > 0) {
-        g.addEdge(`${(y - 1) * size + x}`, v, e[y][x]) // down
-      }
-      // if (x+1 < size) {
-      //   g.addEdge(v, `${(y * size) + (x + 1)}`, e[y][x+1]) // left
-      // }
-      // if (y+1 < size) {
-      //   g.addEdge(v, (y + 1) * size + x, e[y+1][x]) // up
-      // }
     }
   }
-
-  const { parents, distances } = g.dijkstra('0');
-  console.log(parents, distances)
+  for (let x = 0; x < size; x++) {
+    for (let y = 0; y < size; y++) {
+      const v = `${x},${y}`;
+      if (x > 0) {
+        g.addEdge(`${x - 1},${y}`, v, e[y][x]) // right
+      }
+      if (y > 0) {
+        g.addEdge(`${x},${y - 1}`, v, e[y][x]) // down
+      }
+      if (x+1 < size) {
+        g.addEdge(`${x + 1},${y}`, v, e[y][x]) // left
+      }
+      if (y+1 < size) {
+        g.addEdge(`${x},${y + 1}`, v, e[y][x]) // up
+      }
+    }
+  }
+  const { parents, distances } = g.dijkstra('0,0');
+  // console.log(parents, distances)
   let solution = Infinity
-  solution = distances[`${size * size -1}`]
+  solution = distances[`${size - 1},${size - 1}`]
   console.log(`Solution: ${solution}`)
 });
-
+// 575
+// 597
+// 595
 
 class Graph {
   constructor() {
