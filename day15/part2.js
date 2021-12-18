@@ -8,38 +8,39 @@ fs.readFile(filename, 'utf8', (err, data) => {
     .map(l => l.split('').map(x => parseInt(x)))
 
   const size = e.length
+  const ts = size*multi
   for (let x = 0; x < size * multi; x++) {
     for (let y = 0; y < size * multi; y++) {
-      const v = `${x},${y}`;
+      const v = y*ts + x;
       g.addVertex(v)
     }
   }
-  for (let x = 0; x < size*multi; x++) {
-    for (let y = 0; y < size*multi; y++) {
-      const v = `${x},${y}`;
+  for (let y = 0; y < ts; y++) {
+    for (let x = 0; x < ts; x++) {
+      const v = y*ts + x;
       const add = Math.floor(x / size) + Math.floor(y / size)
       let risk = e[y%size][x%size] + add;
       if (risk > 9) {
         risk -= 9
       }
       if (x > 0) {
-        g.addEdge(`${x - 1},${y}`, v, risk) // right
+        g.addEdge((x - 1) + y * ts, v, risk) // right
       }
       if (y > 0) {
-        g.addEdge(`${x},${y - 1}`, v, risk) // down
+        g.addEdge(x + (y - 1) * ts, v, risk) // down
       }
       if (x+1 < size*multi) {
-        g.addEdge(`${x + 1},${y}`, v, risk) // left
+        g.addEdge((x + 1) + y * ts, v, risk) // left
       }
       if (y+1 < size*multi) {
-        g.addEdge(`${x},${y + 1}`, v, risk) // up
+        g.addEdge(x + (y + 1) * ts, v, risk) // up
       }
     }
   }
-  const { distances } = g.dijkstra('0,0');
+  const { distances } = g.dijkstra(0);
   let solution = Infinity
-  solution = distances[`${size*multi - 1},${size*multi - 1}`]
-  console.log(`Solution: ${solution} (${process.hrtime(start)[1] / 1000000}ms)`)
+  solution = distances[ts * ts - 1]
+  console.log(`Solution: ${solution} (${process.hrtime(start)[0]+process.hrtime(start)[1] / 1000000000}s)`)
 });
 
 class Graph {
@@ -54,10 +55,6 @@ class Graph {
   }
 
   addEdge(vertex1, vertex2, weight) {
-    this.adjacencyList[vertex1][vertex2] = weight;
-  }
-
-  changeWeight(vertex1, vertex2, weight) {
     this.adjacencyList[vertex1][vertex2] = weight;
   }
 
